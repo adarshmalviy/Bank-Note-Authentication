@@ -9,76 +9,78 @@ Created on Sat Jan 22 00:18:18 2022
 import numpy as np
 import pickle
 import pandas as pd
+import time
 #from flasgger import Swagger
 import streamlit as st 
 
 from PIL import Image
 
-#app=Flask(__name__)
-#Swagger(app)
+import streamlit as st
+
+import webbrowser
 
 pickle_in = open("classifier.pkl","rb")
 classifier=pickle.load(pickle_in)
 
-#@app.route('/')
+
 def welcome():
     return "Welcome All"
 
-#@app.route('/predict',methods=["Get"])
+
 def predict_note_authentication(variance,skewness,curtosis,entropy):
-    
-    """Let's Authenticate the Banks Note 
-    This is using docstrings for specifications.
-    ---
-    parameters:  
-      - name: variance
-        in: query
-        type: number
-        required: true
-      - name: skewness
-        in: query
-        type: number
-        required: true
-      - name: curtosis
-        in: query
-        type: number
-        required: true
-      - name: entropy
-        in: query
-        type: number
-        required: true
-    responses:
-        200:
-            description: The output values
-        
-    """
    
     prediction=classifier.predict([[variance,skewness,curtosis,entropy]])
+  
     print(prediction)
     return prediction
 
 
 
 def main():
-    st.title("Bank Authenticator")
+    st.title("Bank Note Authenticator")
     html_temp = """
-    <div style="background-color:tomato;padding:10px">
-    <h2 style="color:white;text-align:center;">Streamlit Bank Authenticator ML App </h2>
+    <div style="background-color:SlateBlue;padding:10px">
+    <h2 style="color:white;text-align:center;">Streamlit Bank Note Authenticator ML App </h2>
     </div>
     """
     st.markdown(html_temp,unsafe_allow_html=True)
-    variance = st.text_input("Variance","Type Here")
-    skewness = st.text_input("skewness","Type Here")
-    curtosis = st.text_input("curtosis","Type Here")
-    entropy = st.text_input("entropy","Type Here")
+    variance = st.text_input("Variance"," ")
+    skewness = st.text_input("skewness"," ")
+    curtosis = st.text_input("curtosis"," ")
+    entropy = st.text_input("entropy"," ")
     result=""
     if st.button("Predict"):
         result=predict_note_authentication(variance,skewness,curtosis,entropy)
-    st.success('The output is {}'.format(result))
+    if result == 1:
+        with st.spinner('Wait for it...'):
+            time.sleep(1)
+        st.success('You have the Genuine Note'.format(result))
+        st.balloons()
+        
+    if result == 0:
+        with st.spinner('Wait for it...'):
+            time.sleep(1)
+        st.error('You Have the Fake Note'.format(result))
+    
     if st.button("About"):
-        st.text("Lets LEarn")
-        st.text("Built with Streamlit")
+        html_temp_footer = """
+           <p class='footer-description'>Made with &#10084;&#65039; by Adarsh Malviya</p>
+        """
 
+        st.markdown(html_temp_footer,unsafe_allow_html = True)
+        
+url = 'www.github.com/adarshmalviy'
+url2 = 'www.linkedin.com/in/adarshmalviy'       
+left, right = st.columns(2)
+with left:
+    if st.button('GitHub'):
+        webbrowser.open_new_tab(url1)
+with right:
+    if st.button('Linkedin'):
+        webbrowser.open_new_tab(url2)
+        
+        
+        
 if __name__=='__main__':
     main()
     
